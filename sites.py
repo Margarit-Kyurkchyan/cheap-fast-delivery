@@ -1,26 +1,26 @@
+from flask import Flask
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
 
+app = Flask(__name__)
+app.config.from_pyfile('config.py')
+
 
 def ubereats(driver, address, name, queue):
-    driver.get('https://www.ubereats.com/')
+    driver.get(app.config['UBEREATS'])
     search = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'location-typeahead-home-input')))
     # search.send_keys("Detroit, MI")
     search.send_keys(address)
     time.sleep(1.5)
     search.send_keys(Keys.RETURN)
-    button = driver.find_element_by_xpath("//button[contains(text(),'Find Food')]")
-    button.click()
-    # findRestoran = driver.find_element_by_id('search-suggestions-typeahead-input')
+    search.send_keys(Keys.RETURN)
     findRestoran = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'search-suggestions-typeahead-input')))
-    # findRestoran.send_keys("Detroit City Coney Island")
     findRestoran.send_keys(name)
     findRestoran.send_keys(Keys.RETURN)
     time.sleep(3.5)
-    # WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, 'search-suggestions-typeahead-input')))
     try:
         findPrice = driver.find_element_by_xpath(
             '//*[@id="main-content"]/div/div/div[2]/div/div[2]/div[1]/div/div/div/div[2]/div[2]/div/span/div').text
@@ -40,7 +40,7 @@ def ubereats(driver, address, name, queue):
 
 
 def doordash(driver, address, name, queue):
-    driver.get("https://www.doordash.com/")
+    driver.get(app.config['DOORDASH'])
     search = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input')))
     search.send_keys(address)
     time.sleep(3)
@@ -56,3 +56,7 @@ def doordash(driver, address, name, queue):
         queue['doordash'] = {'Price': findPrice, 'Distance': findDist}
     except:
         queue['doordash'] = "no result"
+
+
+def grubhub(driver, address, name, queue):
+    pass

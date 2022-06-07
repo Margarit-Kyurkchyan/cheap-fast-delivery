@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from selenium import webdriver
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from multiprocessing import Process, Manager
 from os import environ
 import sites
@@ -44,6 +45,11 @@ def doordash():
     queue = site('doordash')
     return jsonify(queue)
 
+@app.route('/grubhub')
+def grubhub():
+    queue = site('grubhub')
+    return jsonify(queue)
+
 
 
 def site(siteName):
@@ -59,6 +65,8 @@ def site(siteName):
         sites.ubereats(driver, address, name, queue)
     elif siteName == 'doordash':
         sites.doordash(driver, address, name, queue)
+    elif siteName == 'grubhub':
+        sites.grubhub(driver, address, name, queue)
     return queue
 
 
